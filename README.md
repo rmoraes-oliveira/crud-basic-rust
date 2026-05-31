@@ -6,12 +6,15 @@ A simple REST API for managing notes built with Rust, Axum, and PostgreSQL.
 
 - ✅ Create, read, update, and delete notes
 - ✅ Input validation (1-5000 character limit)
+- ✅ Pagination with limit/offset
+- ✅ JWT authentication with Bearer tokens
+- ✅ Structured logging with tracing
 - ✅ Built with Axum web framework
 - ✅ PostgreSQL database with SQLx
 - ✅ Async/await with Tokio
 - ✅ Docker support
 - ✅ Database migrations with SQLx
-- ✅ Unit tests with validator crate
+- ✅ 17 unit tests + integration tests
 
 ## Prerequisites
 
@@ -70,6 +73,30 @@ Stop the services:
 ```bash
 docker-compose down
 ```
+
+## Quick Start
+
+### 1. Login and Get Token
+```bash
+curl -X POST http://localhost:3000/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "user123", "password": "password123"}'
+```
+
+Response:
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### 2. Use Token to Access Notes
+```bash
+curl -H "Authorization: Bearer <token>" \
+  http://localhost:3000/notes
+```
+
+---
 
 ## API Endpoints
 
@@ -187,9 +214,14 @@ cargo test
 
 **Test Summary:** 12 tests total (11 unit + 1 integration), 100% passing
 
-See [TESTING_GUIDE.md](TESTING_GUIDE.md) for detailed testing documentation.
-See [VALIDATION_GUIDE.md](VALIDATION_GUIDE.md) for validation examples with curl.
-See [PAGINATION_GUIDE.md](PAGINATION_GUIDE.md) for pagination examples and strategies.
+## Documentation
+
+- [TESTING_GUIDE.md](TESTING_GUIDE.md) - Unit and integration tests
+- [VALIDATION_GUIDE.md](VALIDATION_GUIDE.md) - Input validation rules
+- [PAGINATION_GUIDE.md](PAGINATION_GUIDE.md) - Pagination with limit/offset
+- [AUTHENTICATION_GUIDE.md](AUTHENTICATION_GUIDE.md) - JWT auth and login
+- [LOGGING_GUIDE.md](LOGGING_GUIDE.md) - Structured logging configuration
+- [LEARNING_PARETO.md](LEARNING_PARETO.md) - Learning roadmap and next steps
 
 ## Project Structure
 
@@ -264,6 +296,23 @@ Create a `.env` file with the following variables:
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/notes_db
 RUST_LOG=info
 ```
+
+## Logging
+
+View detailed logs during development:
+
+```bash
+# Run with info-level logs
+RUST_LOG=info cargo run
+
+# Run with debug-level logs
+RUST_LOG=debug cargo run
+
+# Filter specific modules
+RUST_LOG=notes_api=debug,axum=info cargo run
+```
+
+See [LOGGING_GUIDE.md](LOGGING_GUIDE.md) for more details.
 
 ## Technology Stack
 

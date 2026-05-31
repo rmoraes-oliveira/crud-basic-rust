@@ -5,6 +5,7 @@ use tower_http::{
     trace::TraceLayer,
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use tracing::info;
 use notes_api::AppState;
 use notes_api::routes;
 
@@ -19,24 +20,28 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
+    info!("Starting Notes API server");
+
     let database_url = std::env::var("DATABASE_URL")
         .expect("DATABASE_URL not defined");
 
+    info!("Connecting to database");
     let pool = PgPool::connect(&database_url)
         .await
         .expect("error connecting to database");
 
+    info!("Running migrations");
     sqlx::migrate!().run(&pool).await.expect("error running migrations");
 
     let state = AppState { db: pool };
 
     let cors = CorsLayer::new()
-    .allow_origin(Any)           // qualquer origem — ajuste em produção
-    .allow_methods(Any)          // GET, POST, DELETE, etc
-    .allow_headers(Any);         // Content-Type, Authorization, etc
+        .allow_origin(Any)           // qualquer origem — ajuste em produção
+        .allow_methods(Any)          // GET, POST, DELETE, etc
+        .allow_headers(Any);         // Content-Type, Authorization, etc
 
     let app = Router::new()
-        .merge(routes::notes_router())
+        .merge(routes::app_router())
         .layer(TraceLayer::new_for_http())  // logging automático
         .layer(cors)                         // CORS
         .with_state(state);
@@ -45,6 +50,6 @@ async fn main() {
         .await
         .unwrap();
 
-    println!("server running at http://localhost:3000");
+    info!("server running at http://localhost:3000");
     axum::serve(listener, app).await.unwrap();
 }

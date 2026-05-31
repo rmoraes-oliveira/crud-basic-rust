@@ -8,6 +8,19 @@ pub struct Note {
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
+#[derive(Serialize)]
+pub struct AuthResponse {
+    pub token: String,
+}
+
+#[derive(Deserialize, Validate)]
+pub struct LoginRequest {
+    #[validate(length(min = 3, max = 50))]
+    pub username: String,
+    #[validate(length(min = 8, max = 128))]
+    pub password: String,
+}
+
 #[derive(Deserialize, Validate)]
 pub struct NewNoteInput {
     #[validate(length(min = 1, max = 5000, message = "Content must be between 1 and 5000 characters"))]

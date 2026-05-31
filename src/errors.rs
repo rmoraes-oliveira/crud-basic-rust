@@ -6,6 +6,9 @@ pub enum AppError {
     Database(sqlx::Error),
     NotFound,
     ValidationError(String),
+    Unauthorized,
+    JwtCreationFailed,
+    PasswordHashingFailed,
 }
 
 #[derive(Serialize)]
@@ -22,6 +25,18 @@ impl IntoResponse for AppError {
                 format!("database error: {}", e),
             ),
             AppError::ValidationError(e) => (StatusCode::BAD_REQUEST, e),
+            AppError::Unauthorized => (
+                StatusCode::UNAUTHORIZED,
+                "unauthorized - invalid or missing token".to_string(),
+            ),
+            AppError::JwtCreationFailed => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "failed to create token".to_string(),
+            ),
+            AppError::PasswordHashingFailed => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "failed to hash password".to_string(),
+            ),
         };
 
         (status, Json(ErrorResponse { error: message })).into_response()
