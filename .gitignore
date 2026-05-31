@@ -1,0 +1,24 @@
+# Rust
+/target
+Cargo.lock
+*.rs.bk
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# SQLx
+.sqlx/
+sqlx-data.json
+
+# Logs
+*.log
