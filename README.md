@@ -5,11 +5,13 @@ A simple REST API for managing notes built with Rust, Axum, and PostgreSQL.
 ## Features
 
 - ✅ Create, read, update, and delete notes
+- ✅ Input validation (1-5000 character limit)
 - ✅ Built with Axum web framework
 - ✅ PostgreSQL database with SQLx
 - ✅ Async/await with Tokio
 - ✅ Docker support
 - ✅ Database migrations with SQLx
+- ✅ Unit tests with validator crate
 
 ## Prerequisites
 
@@ -91,6 +93,16 @@ Content-Type: application/json
 }
 ```
 
+### Update a note
+```http
+PATCH /notes/:id
+Content-Type: application/json
+
+{
+  "content": "Updated note content"
+}
+```
+
 ### Delete a note
 ```http
 DELETE /notes/:id
@@ -115,10 +127,34 @@ curl http://localhost:3000/notes
 curl http://localhost:3000/notes/1
 ```
 
+### Update a note
+```bash
+curl -X PATCH http://localhost:3000/notes/1 \
+  -H "Content-Type: application/json" \
+  -d '{"content": "Updated content"}'
+```
+
 ### Delete a note
 ```bash
 curl -X DELETE http://localhost:3000/notes/1
 ```
+
+## Validation
+
+All endpoints validate input with the following rules:
+- **content**: Must be between 1 and 5000 characters
+- Invalid requests return `400 Bad Request` with error details
+
+See [VALIDATION_GUIDE.md](VALIDATION_GUIDE.md) for detailed validation examples.
+
+## Testing
+
+Run unit tests:
+```bash
+cargo test --lib
+```
+
+See [VALIDATION_GUIDE.md](VALIDATION_GUIDE.md) for integration test examples with curl.
 
 ## Project Structure
 

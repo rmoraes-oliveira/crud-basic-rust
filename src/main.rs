@@ -1,8 +1,3 @@
-mod db;
-mod errors;
-mod models;
-mod routes;
-
 use axum::Router;
 use sqlx::PgPool;
 use tower_http::{
@@ -10,11 +5,8 @@ use tower_http::{
     trace::TraceLayer,
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-
-#[derive(Clone)]
-pub struct AppState {
-    pub db: PgPool,
-}
+use notes_api::AppState;
+use notes_api::routes;
 
 #[tokio::main]
 async fn main() {

@@ -4,6 +4,7 @@ use serde::Serialize;
 pub enum AppError {
     Database(sqlx::Error),
     NotFound,
+    ValidationError(String),
 }
 
 #[derive(Serialize)]
@@ -19,6 +20,7 @@ impl IntoResponse for AppError {
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("database error: {}", e),
             ),
+            AppError::ValidationError(e) => (StatusCode::BAD_REQUEST, e),
         };
 
         (status, Json(ErrorResponse { error: message })).into_response()

@@ -37,6 +37,19 @@ pub async fn create(db: &PgPool, content: &str) -> Result<Note, AppError> {
     Ok(note)
 }
 
+pub async fn update(db: &PgPool, id: i32, content: &str) -> Result<Option<Note>, AppError> {
+    let note = sqlx::query_as!(
+        Note,
+        "UPDATE notes SET content = $1 WHERE id = $2 RETURNING id, content, created_at",
+        content,
+        id
+    )
+    .fetch_optional(db)
+    .await?;
+
+    Ok(note)
+}
+
 pub async fn delete(db: &PgPool, id: i32) -> Result<bool, AppError> {
     let result = sqlx::query!("DELETE FROM notes WHERE id = $1", id)
         .execute(db)
