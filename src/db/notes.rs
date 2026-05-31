@@ -57,3 +57,56 @@ pub async fn delete(db: &PgPool, id: i32) -> Result<bool, AppError> {
 
     Ok(result.rows_affected() > 0)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_helpers::{setup_test_db, cleanup_test_db};
+
+    #[tokio::test]
+    async fn test_create_note() {
+        let pool = setup_test_db().await;
+        cleanup_test_db(&pool).await;
+
+        let note = create(&pool, "Test note").await.unwrap();
+
+        assert_eq!(note.content, "Test note");
+        assert!(note.id > 0);
+        assert!(note.created_at.is_some());
+
+        cleanup_test_db(&pool).await;
+    }
+
+    #[tokio::test]
+    async fn test_get_nonexistent_note() {
+        let pool = setup_test_db().await;
+        cleanup_test_db(&pool).await;
+
+        let found = get_by_id(&pool, 99999).await.unwrap();
+        assert!(found.is_none());
+
+        cleanup_test_db(&pool).await;
+    }
+
+    #[tokio::test]
+    async fn test_update_nonexistent_note() {
+        let pool = setup_test_db().await;
+        cleanup_test_db(&pool).await;
+
+        let result = update(&pool, 99999, "New content").await.unwrap();
+        assert!(result.is_none());
+
+        cleanup_test_db(&pool).await;
+    }
+
+    #[tokio::test]
+    async fn test_delete_nonexistent_note() {
+        let pool = setup_test_db().await;
+        cleanup_test_db(&pool).await;
+
+        let deleted = delete(&pool, 99999).await.unwrap();
+        assert!(!deleted);
+
+        cleanup_test_db(&pool).await;
+    }
+}

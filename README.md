@@ -149,12 +149,25 @@ See [VALIDATION_GUIDE.md](VALIDATION_GUIDE.md) for detailed validation examples.
 
 ## Testing
 
-Run unit tests:
+### Unit Tests
 ```bash
 cargo test --lib
 ```
 
-See [VALIDATION_GUIDE.md](VALIDATION_GUIDE.md) for integration test examples with curl.
+### Integration Tests (with PostgreSQL)
+```bash
+cargo test --test integration_tests
+```
+
+### All Tests
+```bash
+cargo test
+```
+
+**Test Summary:** 12 tests total (11 unit + 1 integration), 100% passing
+
+See [TESTING_GUIDE.md](TESTING_GUIDE.md) for detailed testing documentation.
+See [VALIDATION_GUIDE.md](VALIDATION_GUIDE.md) for validation examples with curl.
 
 ## Project Structure
 

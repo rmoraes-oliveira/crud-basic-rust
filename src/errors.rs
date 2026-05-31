@@ -1,6 +1,7 @@
 use axum::{http::StatusCode, response::{IntoResponse, Response, Json}};
 use serde::Serialize;
 
+#[derive(Debug)]
 pub enum AppError {
     Database(sqlx::Error),
     NotFound,
