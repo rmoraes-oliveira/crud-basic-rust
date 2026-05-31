@@ -1,10 +1,22 @@
-use axum::{extract::{Path, State}, http::StatusCode, Json};
+use axum::{extract::{Path, Query, State}, http::StatusCode, Json};
 use validator::Validate;
-use crate::{db, errors::AppError, models::{Note, NewNoteInput, UpdateNoteInput}, AppState};
+use crate::{db, errors::AppError, models::{Note, NewNoteInput, UpdateNoteInput, PaginationParams, PaginatedResponse, PaginationInfo}, AppState};
 use db::notes;
 
-pub async fn list(State(state): State<AppState>) -> Result<Json<Vec<Note>>, AppError> {
-    Ok(Json(db::notes::list(&state.db).await?))
+pub async fn list(
+    State(state): State<AppState>,
+    Query(params): Query<PaginationParams>,
+) -> Result<Json<PaginatedResponse<Note>>, AppError> {
+    let (notes, total) = db::notes::list_paginated(&state.db, params.limit, params.offset).await?;
+
+    Ok(Json(PaginatedResponse {
+        data: notes,
+        pagination: PaginationInfo {
+            limit: params.limit,
+            offset: params.offset,
+            total,
+        },
+    }))
 }
 
 pub async fn get(

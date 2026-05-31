@@ -19,3 +19,32 @@ pub struct UpdateNoteInput {
     #[validate(length(min = 1, max = 5000, message = "Content must be between 1 and 5000 characters"))]
     pub content: String,
 }
+
+#[derive(Deserialize)]
+pub struct PaginationParams {
+    #[serde(default = "default_limit")]
+    pub limit: i64,
+    #[serde(default = "default_offset")]
+    pub offset: i64,
+}
+
+fn default_limit() -> i64 {
+    20
+}
+
+fn default_offset() -> i64 {
+    0
+}
+
+#[derive(Serialize)]
+pub struct PaginatedResponse<T> {
+    pub data: Vec<T>,
+    pub pagination: PaginationInfo,
+}
+
+#[derive(Serialize)]
+pub struct PaginationInfo {
+    pub limit: i64,
+    pub offset: i64,
+    pub total: i64,
+}

@@ -73,10 +73,14 @@ docker-compose down
 
 ## API Endpoints
 
-### List all notes
+### List all notes (with pagination)
 ```http
-GET /notes
+GET /notes?limit=20&offset=0
 ```
+
+Query Parameters:
+- `limit` (optional, default: 20) - Items per page
+- `offset` (optional, default: 0) - Items to skip
 
 ### Get a specific note
 ```http
@@ -117,9 +121,26 @@ curl -X POST http://localhost:3000/notes \
   -d '{"content": "Learn Rust"}'
 ```
 
-### List all notes
+### List all notes (default pagination)
 ```bash
 curl http://localhost:3000/notes
+```
+
+### List notes with custom pagination
+```bash
+curl "http://localhost:3000/notes?limit=10&offset=20"
+```
+
+Response includes pagination metadata:
+```json
+{
+  "data": [...],
+  "pagination": {
+    "limit": 10,
+    "offset": 20,
+    "total": 100
+  }
+}
 ```
 
 ### Get a specific note
@@ -168,6 +189,7 @@ cargo test
 
 See [TESTING_GUIDE.md](TESTING_GUIDE.md) for detailed testing documentation.
 See [VALIDATION_GUIDE.md](VALIDATION_GUIDE.md) for validation examples with curl.
+See [PAGINATION_GUIDE.md](PAGINATION_GUIDE.md) for pagination examples and strategies.
 
 ## Project Structure
 

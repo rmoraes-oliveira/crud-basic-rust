@@ -5,12 +5,35 @@ use crate::errors::AppError;
 pub async fn list(db: &PgPool) -> Result<Vec<Note>, AppError> {
     let notes = sqlx::query_as!(
         Note,
-        "SELECT id, content, created_at FROM notes ORDER BY id"
+        "SELECT id, content, created_at FROM notes ORDER BY created_at DESC"
     )
     .fetch_all(db)
     .await?;
 
     Ok(notes)
+}
+
+pub async fn list_paginated(
+    db: &PgPool,
+    limit: i64,
+    offset: i64,
+) -> Result<(Vec<Note>, i64), AppError> {
+    let notes = sqlx::query_as!(
+        Note,
+        "SELECT id, content, created_at FROM notes ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+        limit,
+        offset
+    )
+    .fetch_all(db)
+    .await?;
+
+    let count_result = sqlx::query!("SELECT COUNT(*) as count FROM notes")
+        .fetch_one(db)
+        .await?;
+
+    let total = count_result.count.unwrap_or(0);
+
+    Ok((notes, total))
 }
 
 pub async fn get_by_id(db: &PgPool, id: i32) -> Result<Option<Note>, AppError> {

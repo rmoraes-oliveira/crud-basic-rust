@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::models::{NewNoteInput, UpdateNoteInput};
+    use crate::models::{NewNoteInput, UpdateNoteInput, PaginationParams};
     use validator::Validate;
 
     #[test]
@@ -57,5 +57,28 @@ mod tests {
             content: "x".repeat(5001),
         };
         assert!(input.validate().is_err());
+    }
+
+    #[test]
+    fn test_pagination_params_defaults() {
+        let params: PaginationParams = serde_json::from_str("{}").unwrap();
+        assert_eq!(params.limit, 20);
+        assert_eq!(params.offset, 0);
+    }
+
+    #[test]
+    fn test_pagination_params_custom() {
+        let params: PaginationParams =
+            serde_json::from_str(r#"{"limit": 50, "offset": 100}"#).unwrap();
+        assert_eq!(params.limit, 50);
+        assert_eq!(params.offset, 100);
+    }
+
+    #[test]
+    fn test_pagination_params_partial() {
+        let params: PaginationParams =
+            serde_json::from_str(r#"{"limit": 10}"#).unwrap();
+        assert_eq!(params.limit, 10);
+        assert_eq!(params.offset, 0);
     }
 }
